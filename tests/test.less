@@ -1,0 +1,54 @@
+// @test1: 14px;
+
+// .class {
+//     @test2: 16px;
+
+//     &__subclass {
+//         width: 12px;
+
+//         .subclass2 {
+//             width: 14px;
+//         }
+//     }
+// }
+
+// @test3: 18px;
+
+// a {
+//     color: blue;
+
+//     &:hover {
+//         color: green;
+//     }
+// }
+
+// .button {
+//     &-ok {
+//       background-image: url("ok.png");
+//     }
+//     &-cancel {
+//       background-image: url("cancel.png");
+//     }
+  
+//     &-custom {
+//       background-image: url("custom.png");
+//     }
+//   }
+
+.link {
+    & + & {
+      color: red;
+    }
+  
+    & & {
+      color: green;
+    }
+  
+    && {
+      color: blue;
+    }
+  
+    &,&ish {
+      color: cyan;
+    }
+  }
