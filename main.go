@@ -35,7 +35,7 @@ func main() {
 
 		if strings.HasPrefix(line, ASPERAND) && strings.HasSuffix(line, SEMICOLON) {
 			parts := strings.SplitN(line, COLON, 2)
-			currentScope.AddVariable(Variable{name: parts[0], value: strings.Trim(parts[1], JoinStrings(SPACE, SEMICOLON))})
+			currentScope.AddVariable(Variable{name: strings.Trim(parts[0], ASPERAND), value: strings.Trim(parts[1], JoinStrings(SPACE, SEMICOLON))})
 
 			continue
 		}

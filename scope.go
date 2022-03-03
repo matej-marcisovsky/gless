@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -31,18 +32,20 @@ func (scope *Scope) AddScope(_scope *Scope) {
 
 func (scope *Scope) Process(waitGroup *sync.WaitGroup, parentSelector string, variables []Variable) {
 	selector := scope.computeSelector(parentSelector)
+	scope.prepareVariables(variables)
 
 	if scope.selector != "" && len(scope.rules) > 0 {
 		scope.result = JoinStrings(selector, SPACE, CURLY_BRACKET_OPEN, NEW_LINE)
 	}
 
 	for _, rule := range scope.rules {
+		rule.Process(scope.variables)
 		scope.result = scope.result + JoinStrings(TABULATOR, rule.property, COLON, SPACE, rule.value, SEMICOLON, NEW_LINE)
 	}
 
 	for _, _scope := range scope.scopes {
 		waitGroup.Add(1)
-		go _scope.Process(waitGroup, selector, append(variables, scope.variables...))
+		go _scope.Process(waitGroup, selector, scope.variables)
 	}
 
 	if scope.selector != "" && len(scope.rules) > 0 {
@@ -74,4 +77,22 @@ func (scope *Scope) computeSelector(parentSelector string) string {
 	}
 
 	return result
+}
+
+func (scope *Scope) prepareVariables(variables []Variable) {
+	scopeVariablesNames := make(map[string]struct{}, len(scope.variables))
+
+	for _, variable := range scope.variables {
+		scopeVariablesNames[variable.name] = struct{}{}
+	}
+
+	for _, variable := range variables {
+		if _, ok := scopeVariablesNames[variable.name]; !ok {
+			scope.variables = append(scope.variables, variable)
+		}
+	}
+
+	sort.Slice(scope.variables, func(i, j int) bool {
+		return scope.variables[i].name > scope.variables[j].name
+	})
 }

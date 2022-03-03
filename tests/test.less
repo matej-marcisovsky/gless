@@ -35,20 +35,39 @@
 //     }
 //   }
 
+// .link {
+//     & + & {
+//       color: red;
+//     }
+  
+//     & & {
+//       color: green;
+//     }
+  
+//     && {
+//       color: blue;
+//     }
+  
+//     &,&ish {
+//       color: cyan;
+//     }
+//   }
+
+// Variables
+@link-color:        #428bca;
+@link-color-hover:  #eeeeee;
+
+// Usage
+a,
 .link {
-    & + & {
-      color: red;
-    }
-  
-    & & {
-      color: green;
-    }
-  
-    && {
-      color: blue;
-    }
-  
-    &,&ish {
-      color: cyan;
-    }
-  }
+  color: @link-color;
+}
+a:hover {
+  @link-color-hover:  red;
+
+  color: @link-color-hover;
+}
+.widget {
+  color: #fff;
+  background: @link-color;
+}
