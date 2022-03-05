@@ -75,5 +75,4 @@ func main() {
 
 	result := root.String()
 	fmt.Print(result)
-	fmt.Print("\n")
 }

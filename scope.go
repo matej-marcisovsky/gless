@@ -31,8 +31,8 @@ func (scope *Scope) AddScope(_scope *Scope) {
 }
 
 func (scope *Scope) Process(waitGroup *sync.WaitGroup, parentSelector string, variables []Variable) {
-	selector := scope.computeSelector(parentSelector)
 	scope.prepareVariables(variables)
+	selector := scope.computeSelector(parentSelector)
 
 	if scope.selector != "" && len(scope.rules) > 0 {
 		scope.result = JoinStrings(selector, SPACE, CURLY_BRACKET_OPEN, NEW_LINE)
