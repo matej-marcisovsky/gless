@@ -1,9 +1,12 @@
-package main
+package rule
 
-import "testing"
+import (
+	"gless/variable"
+	"testing"
+)
 
 func TestApplyVariableToProperty(t *testing.T) {
-	variable := Variable{name: "property", value: "color"}
+	variable := variable.Variable{Name: "property", Value: "color"}
 	var testCases = map[string]string{
 		"@{property}":            "color",
 		"background-@{property}": "background-color",
@@ -11,10 +14,10 @@ func TestApplyVariableToProperty(t *testing.T) {
 
 	for property, result := range testCases {
 		t.Run(property, func(t *testing.T) {
-			rule := Rule{property: property, value: ""}
+			rule := Rule{Property: property, Value: ""}
 			rule.applyVariableToProperty(variable)
 
-			if rule.property != result {
+			if rule.Property != result {
 				t.Fail()
 			}
 		})
@@ -22,17 +25,17 @@ func TestApplyVariableToProperty(t *testing.T) {
 }
 
 func TestApplyVariableToValue(t *testing.T) {
-	variable := Variable{name: "value", value: "red"}
+	variable := variable.Variable{Name: "value", Value: "red"}
 	var testCases = map[string]string{
 		"@value": "red",
 	}
 
 	for value, result := range testCases {
 		t.Run(value, func(t *testing.T) {
-			rule := Rule{property: "", value: value}
+			rule := Rule{Property: "", Value: value}
 			rule.applyVariableToValue(variable)
 
-			if rule.value != result {
+			if rule.Value != result {
 				t.Fail()
 			}
 		})

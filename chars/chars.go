@@ -1,4 +1,4 @@
-package main
+package chars
 
 const AMPERSAND = "&"
 const ASPERAND = "@"
@@ -7,7 +7,11 @@ const COLON = ":"
 const COMMA = ","
 const CURLY_BRACKET_CLOSE = "}"
 const CURLY_BRACKET_OPEN = "{"
+const MINUS = "-"
 const NEW_LINE = "\n"
+const PARENTHESIS_CLOSE = ")"
+const PARENTHESIS_OPEN = "("
+const PLUS = "+"
 const SEMICOLON = ";"
 const SLASH = "/"
 const SPACE = " "

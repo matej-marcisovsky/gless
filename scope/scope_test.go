@@ -1,4 +1,4 @@
-package main
+package scope
 
 import "testing"
 
@@ -13,7 +13,7 @@ func TestComputeSelector(t *testing.T) {
 
 	for selector, result := range testCases {
 		t.Run(selector, func(t *testing.T) {
-			scope := Scope{selector: selector}
+			scope := Scope{Selector: selector}
 
 			if scope.computeSelector(PARENT_SELECTOR) != result {
 				t.Fail()
