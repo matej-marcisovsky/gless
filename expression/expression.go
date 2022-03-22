@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gless/chars"
+	"gless/dimension"
 	"gless/unit"
 	"gless/utils"
 	"gless/variable"
@@ -12,11 +13,14 @@ import (
 
 // http://mathcenter.oxford.emory.edu/site/cs171/shuntingYardAlgorithm/
 
+var operators string = utils.JoinStrings(chars.ASTERISK, chars.MINUS, chars.PLUS, chars.SLASH)
+
 type Expression string
 
+// TODO strict units
 func (expression Expression) Evaluate(variables map[string]variable.Variable) (string, error) {
 	if !expression.isBalanced() {
-		return "", errors.Unwrap(fmt.Errorf("Expression '%s' is not balanced", string(expression)))
+		return "", errors.Unwrap(fmt.Errorf("expression '%s' is not balanced", string(expression)))
 	}
 
 	err := expression.processVariables(variables)
@@ -26,19 +30,50 @@ func (expression Expression) Evaluate(variables map[string]variable.Variable) (s
 	}
 
 	postfixNotation := expression.toPostfix()
-	finalUnit := unit.NUMBER
-	for _, notation := range postfixNotation {
-		_unit, isUnit := unit.GetUnit(notation)
+	stack := make([]*dimension.Dimension, 0)
+	finalUnit := unit.SINGULAR
+	for _, token := range postfixNotation {
+		currentUnit, isUnit := unit.GetUnit(token)
 
-		if isUnit {
-			finalUnit = _unit
-			break
+		if isUnit && finalUnit == unit.SINGULAR {
+			finalUnit = currentUnit
+		}
+
+		if expression.isOperator(token) {
+			last := stack[len(stack)-1]
+			penultimate := stack[len(stack)-2]
+			stack = stack[:len(stack)-2]
+			dimension := dimension.Dimension{Unit: finalUnit}
+
+			switch token {
+			case chars.ASTERISK:
+				dimension.Value = penultimate.Value * last.Value
+			case chars.MINUS:
+				dimension.Value = penultimate.Value - last.Value
+			case chars.PLUS:
+				dimension.Value = penultimate.Value + last.Value
+			case chars.SLASH:
+				dimension.Value = penultimate.Value / last.Value
+			default:
+				return "", errors.Unwrap(fmt.Errorf("unknown operator '%s'", token))
+			}
+
+			stack = append(stack, &dimension)
+		} else {
+			dimension, err := dimension.NewDimension(token)
+			if err != nil {
+				return "", err
+			}
+
+			stack = append(stack, dimension)
 		}
 	}
 
-	fmt.Println(finalUnit)
+	if len(stack) != 1 {
+		return "", errors.Unwrap(fmt.Errorf("invalid expression '%s'", string(expression)))
+	}
 
-	return strings.Join(postfixNotation, chars.SPACE), nil
+	return stack[0].String(), nil
 }
 
 func (expression Expression) isBalanced() bool {
@@ -76,6 +111,10 @@ func (expression Expression) isSamePrecedence(a string, b string) bool {
 		(!strings.ContainsAny(a, higherPrecedenceOperators) && !strings.ContainsAny(b, higherPrecedenceOperators))
 }
 
+func (expression Expression) isOperator(token string) bool {
+	return strings.ContainsAny(token, operators)
+}
+
 func (expression *Expression) processVariables(variables map[string]variable.Variable) error {
 	foundVariables := variable.ExtractVariables(string(*expression))
 
@@ -84,7 +123,7 @@ func (expression *Expression) processVariables(variables map[string]variable.Var
 			variable, variableExists := variables[variableName]
 
 			if !variableExists {
-				return errors.Unwrap(fmt.Errorf("Variable '%s' not find", variableName))
+				return errors.Unwrap(fmt.Errorf("variable '%s' not find", variableName))
 			}
 
 			*expression = Expression(strings.ReplaceAll(string(*expression), variable.Name, variable.Value))
@@ -97,7 +136,6 @@ func (expression *Expression) processVariables(variables map[string]variable.Var
 }
 
 func (expression Expression) toPostfix() []string {
-	operators := utils.JoinStrings(chars.ASTERISK, chars.MINUS, chars.PLUS, chars.SLASH)
 	operatorStack := make([]string, 0)
 	queue := make([]string, 0)
 
@@ -124,7 +162,7 @@ func (expression Expression) toPostfix() []string {
 			continue
 		}
 
-		if len(token) == 1 && strings.ContainsAny(token, operators) {
+		if len(token) == 1 && expression.isOperator(token) {
 			if len(operatorStack) == 0 {
 				operatorStack = append(operatorStack, token)
 				continue

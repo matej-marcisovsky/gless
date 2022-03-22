@@ -21,14 +21,14 @@ func TestEvaluate(t *testing.T) {
 	variables["@b"] = variable.Variable{Name: "@b", Value: "@c + 5px"}
 	variables["@c"] = variable.Variable{Name: "@c", Value: "8px"}
 
-	expression := Expression("@a * (@b + C * D) + E")
+	expression := Expression("@a * (@b + 2px * 3px) + 8")
 	evaluate, err := expression.Evaluate(variables)
 
 	if err != nil {
 		t.Fail()
 	}
 
-	if evaluate != "3px 8px 5px + C D * + * E +" {
+	if evaluate != "65px" {
 		t.Log(evaluate)
 		t.Fail()
 	}

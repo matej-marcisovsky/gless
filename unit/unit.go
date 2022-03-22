@@ -2,30 +2,31 @@ package unit
 
 import "regexp"
 
-var regexpUnit *regexp.Regexp = regexp.MustCompile(`(px|em|ex|ch|rem|in|cm|mm|pc|pt|vw|vh|vmin|vmax)$`)
+var regexpLength *regexp.Regexp = regexp.MustCompile(`(px|em|ex|ch|rem|in|cm|mm|pc|pt|vw|vh|vmin|vmax)$`)
 
 type Unit string
 
 const (
-	PX     Unit = "px"
-	EM     Unit = "em"
-	EX     Unit = "ex"
-	CH     Unit = "ch"
-	REM    Unit = "rem"
-	IN     Unit = "in"
-	CM     Unit = "cm"
-	MM     Unit = "mm"
-	PC     Unit = "pc"
-	PT     Unit = "pt"
-	VW     Unit = "vw"
-	VH     Unit = "vh"
-	VMIN   Unit = "vmin"
-	VMAX   Unit = "vmax"
-	NUMBER Unit = "number"
+	CM       Unit = "cm"
+	EM       Unit = "em"
+	EX       Unit = "ex"
+	CH       Unit = "ch"
+	IN       Unit = "in"
+	MM       Unit = "mm"
+	PC       Unit = "pc"
+	PT       Unit = "pt"
+	PX       Unit = "px"
+	REM      Unit = "rem"
+	SINGULAR Unit = ""
+	VH       Unit = "vh"
+	VMAX     Unit = "vmax"
+	VMIN     Unit = "vmin"
+	VW       Unit = "vw"
 )
 
+// TODO add other units
 func GetUnit(value string) (Unit, bool) {
-	_unit := regexpUnit.FindString(value)
+	unit := regexpLength.FindString(value)
 
-	return Unit(_unit), _unit != ""
+	return Unit(unit), unit != ""
 }
